@@ -1,0 +1,59 @@
+- hosts: webservers
+  remote_user: root
+  sudo: yes
+  sudo_user: postgress
+  su: yes
+  su_user: exim
+  gather_facts: no
+  accelerate: no
+  accelerate_port: 5099
+  any_errors_fatal: yes
+  max_fail_percentage: 30
+  connection: local
+  serial: 5
+  vars:
+    http_port: 80
+  vars_files:
+    - "vars.yml"
+    - [ "try-first.yml", "try-second-.yml" ]
+  vars_prompt:
+    - name: "my_password2"
+      prompt: "Enter password2"
+      default: "secret"
+      private: yes
+      encrypt: "md5_crypt"
+      confirm: yes
+      salt: 1234
+      salt_size: 8
+  tags:
+    - stuff
+    - nonsence
+  pre_tasks:
+    - <task>
+    - ...
+  roles:
+    - common
+    - { role: common, port: 5000, when: "bar == 'Baz'", tags :[one, two] }
+    - { role: common, when: month == 'Jan' }
+    - ...
+  tasks:
+    - include: tasks.yaml
+    - include: tasks.yaml foo=bar baz=wibble
+    - include: tasks.yaml
+      vars:
+        foo: aaa
+        baz:
+          - z
+          - y
+    - { include: tasks.yaml, foo: zzz, baz: [a,b]}
+    - include: tasks.yaml
+      when: day == 'Thursday'
+    - <task>
+    - ...
+  post_tasks:
+    - <task>
+    - ...
+  handlers:
+    - include: handlers.yml
+    - <task>
+    - ...
